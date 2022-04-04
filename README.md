@@ -22,6 +22,16 @@
 const conf = ConnectLive.createConference();
 ```
 
+npm을 통해 설치할 수도 있습니다.
+```
+npm install @connectlive/connectlive-web-sdk
+```
+
+ES6 모듈 패턴으로 사용할 수 있습니다.
+```
+import ConnectLive from '@connectlive/connectlive-web-sdk';
+```
+
 ## **간단한 화상회의 구현하기**
 이제 준비를 마쳤으니 간단한 화상회의를 구현해 보도록 하겠습니다. 순서대로 따라 오시면 됩니다.
 
@@ -566,7 +576,7 @@ $ yarn serve
 ```
 
 ### **예제 설명**
-l  Connectlive javascript sdk는 public / libs 폴더 밑에 존재하며, index.html에서 이를 인클루드 하고 있습니다.
+l  Connectlive javascript sdk는 package.json에 명시되어 install 됩니다.
 
 l  예제를 구현한 컴포넌트는 src/components/HelloWorld.vue 파일에 존재합니다.
 
@@ -574,10 +584,19 @@ l  remoteVideo.vue는 상대방의 비디오를 표현하는 컴포넌트입니
 
 l  voiceMeter.vue는 오디오 레벨을 표현하는 컴포넌트입니다.
 
+l  src/components/HelloWorld.vue 내 서비스아이디, 서비스키를 입력해야 합니다.
+```
+await ConnectLive.signIn({
+    serviceId: '서비스아이디를 입력합니다',
+    serviceKey: '서비스키를 입력합니다',
+    secret: '시크릿키를 입력합니다'
+});
+```
+
 
 ### **화면 기능**
 
-1. 접속할 룸 아이디 입니다.
+1. 연결하기 버튼을 클릭하면 명시된 룸아이디로 접속합니다.
 2. 초기에는 연결하기 버튼이 노출되고 룸에 연결되면 연결해제하기 버튼이 노출됩니다.
 3. 연결이 완료된 후에는 화면공유적용 버튼이 노출되고 화면 공유 중이라면 화면공유해제 버튼이 노출됩니다.
 4. 카메라 목록을 가져와 select로 표현합니다.
