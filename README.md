@@ -456,6 +456,21 @@ conf.on('remoteVideoPublished', (evt)=>{
 });
 ```
 
+## **녹화하기**
+ConnectLive는 본인의 화면을 녹화할 수 있습니다. 기본 사용 방법은 아래와 같습니다.
+```
+await conf.publish(([localMedia], true);
+```
+위와 같이 publish 메서드의 두번째 인자를 true로 지정합니다. 만약 이미 local media를 publish하고 있다면 unpublish후 publish를 다시 진행합니다.
+```
+await this.conf.unpublish([this.localMedia]);
+
+await this.conf.publish([this.localMedia], true);
+```
+녹화 결과는 웹훅으로 전달됩니다.
+
+
+
 ## **에러 처리**
 ### **서비스 인증 에러처리**
 인증 과정에서의 에러는 아래와 같이 처리할 수 있습니다.
