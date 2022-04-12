@@ -4,6 +4,8 @@
       <input type="text" v-model="confName" :disabled="isConnected" />
       <button @click="onConnect" v-if="!isConnected">연결하기</button>
       <button @click="onDisConnectConference" v-if="isConnected">연결해제하기</button>
+      <button @click="onRecordingStart" v-if="isConnected && !isRecording">녹화시작</button>
+      <button @click="onRecordingStop" v-if="isConnected && isRecording">녹화중지</button>
       <button @click="onCreateLocalScreen" v-if="isConnected && !localScreen">화면공유적용</button>
       <button @click="onDestroyLocalScreen" v-if="isConnected && localScreen">화면공유해제</button>
 
@@ -63,7 +65,8 @@ export default {
       isConnected: false,
       myId: '',
       cameraDevices: [],
-      audioCheckInterval: -1
+      audioCheckInterval: -1,
+      isRecording: false
     };
   },
   methods: {
@@ -229,6 +232,20 @@ export default {
       }
 
       document.getElementById('spotlight-video').srcObject = target.srcObject;
+    },
+    async onRecordingStart() {
+      await this.conf.unpublish([this.localMedia]);
+
+      await this.conf.publish([this.localMedia], true);
+
+      this.isRecording = true;
+    },
+    async onRecordingStop() {
+      await this.conf.unpublish([this.localMedia]);
+
+      await this.conf.publish([this.localMedia]);
+
+      this.isRecording = false;
     }
   }
 }
