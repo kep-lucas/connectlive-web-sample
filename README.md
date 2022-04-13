@@ -13,7 +13,11 @@
 아래와 같이 첨부한 javascript를 html에 포함할 수 있습니다.
 
 ```
-<script src="connectlive-web-sdk.min.js"></script>
+//최신버전
+<script src="https://cdn.jsdelivr.net/npm/@connectlive/connectlive-web-sdk/dist/connectlive-web-sdk.min.js"></script>
+
+//특정버전
+https://cdn.jsdelivr.net/npm/@connectlive/connectlive-web-sdk@0.0.7/dist/connectlive-web-sdk.min.js
 ```
 
 이렇게 script태그로 삽입된 sdk는 ConnectLive객체를 통해 사용할 수 있습니다.
