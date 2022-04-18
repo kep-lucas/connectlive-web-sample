@@ -184,13 +184,15 @@ localMedia.video.attach(document.getElementById(“비디오태그아이디”))
 ```
 
 ### **Local 장치 목록 가져오기**
-//오디오 장치 가져오기
 ```
-localMedia.getMicDevices();
+//오디오 장치 가져오기
+await localMedia.getMicDevices();
 
 //비디오 장치 가져오기
+await localMedia.getCameraDevices();
 
-localMedia.getCameraDevices();
+//스피커 장치 가져오기
+await localMedia.getSpeakerDevices();
 ```
 
 장치 목록을 가져오는 API는 Promise객체를 반환하며 다음과 같이 사용할 수 있습니다.
@@ -235,6 +237,12 @@ await localMedia.switchCamera('디바이스아이디');
 //switchCamera호출 다음에 localMedia.video.attach() 을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
 ```
 
+
+### ** HD 모드 적용하기
+publish 전에 video의 품질을 좋게 하기 위해 HD 모드를 적용할 수 있습니다.
+```
+localMedia.video.setHd(true);
+```
 
 
 ## **화상회의**
