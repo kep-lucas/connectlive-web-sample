@@ -504,6 +504,12 @@ await this.conf.publish([this.localMedia], true);
 녹화 결과는 웹훅으로 전달됩니다.
 
 
+## **로그출력하기**
+개발 기간 중에는 SDK의 로그 레벨을 조절하여 개발자 도구 콘솔에 상세한 로그를 기록 혹은 제거 할 수 있습니다.
+trace > debug > info > error > off 순으로 에러를 출력합니다. 기본값은 TRACE로 모든 로그를 출력합니다. 개발시에 Connectlive SDK의 로그가 필요 없다고 한다면 로그 출력을 끌수 있습니다.
+```
+ConnectLive.logger.setLevel('off');
+```
 
 ## **에러 처리**
 Connectlive 에러 객체는 두가지 타입으로 나눠집니다. ServerError, ClientError 타입입니다. 이름에서도 알 수 있듯이, 각각 서버 에러와 클라이언트 에러에 대한 정보를 담고 있습니다.
