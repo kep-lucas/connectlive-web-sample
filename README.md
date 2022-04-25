@@ -403,16 +403,10 @@ remoteVideo.setQuality(‘h’);
 | remoteVideoUnpublished | remoteParticipant: RemoteParticipant, remoteVideo: RemoteVideo | 상대 참여자가 비디오 공유를 해제하면 호출됩니다. 인자로 참여자 객체와 비디오 객체가 전달됩니다. 비디오 객체를 이용해 비디오 태그에 비디오를 해제할 수 있습니다. |
 | remoteAudioPublished | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 상대 참여자가 오디오를 공유하면 호출됩니다. 인자로 참여자 객체와 오디오 객체가 전달됩니다. |
 | remoteAudioUnpublished | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 상대 참여자가 오디오 공유를 해제하면 호출됩니다. 인자로 참여자 객체와 오디오 객체가 전달됩니다. |
-
 | remoteAudioSubscribe | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 4개의 오디오 중 하나를 참여자가 점유하면 호출 되는 이벤트입니다. |
 | remoteAudioUnsubscribe | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 점유하고 있던 오디오가 해제되면 호출되는 이벤트 이다. 해당 사용자가 말을 하지 않고 있다는 것을 의미한다. |
-
-| remoteAudioStateChanged | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 다른 참여자의 오디오의 상태 alwaysOn 또는 enabled가 변경되면 호출됩니다. alwaysOn이란, 오디오를 계속적으로 점유해서 나의 오디오가 항시 전달되도록 하는 기능입니다. LocalAudiod의 setAlwaysOn 메소드로 이를 설정할 수 있습니다.
-
-enabled을 false로 설정할 경우, 오디오를 잠시 mute 결과를 얻을 수 있습니다. LocalAudio의 setEnabled 메소드로 이를 설정할 수 있습니다. |
-
+| remoteAudioStateChanged | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 다른 참여자의 오디오의 상태 alwaysOn 또는 enabled가 변경되면 호출됩니다. alwaysOn이란, 오디오를 계속적으로 점유해서 나의 오디오가 항시 전달되도록 하는 기능입니다. LocalAudiod의 setAlwaysOn 메소드로 이를 설정할 수 있습니다. enabled을 false로 설정할 경우, 오디오를 잠시 mute 결과를 얻을 수 있습니다. LocalAudio의 setEnabled 메소드로 이를 설정할 수 있습니다. |
 | remoteVideoStateChanged | remoteParticipant: RemoteParticipant, remoteVideo: RemoteVideo | 다른 참여자의 비디오 상태 곧 enabled 상태가 변경되면 호출됩니다. enabled을 false로 설정할 경우, 비디오를 잠시 mute 결과를 얻을 수 있습니다. LocalVideo의 setEnabled 메소드로 이를 설정할 수 있습니다. |
-
 | disconnected |  | 컨퍼런스 룸에서 정상적으로 나오면 호출되는 이벤트. |
 | error | 에러 메시지 | 미디어서버와의 연결이 실패했을 경우, 호출됩니다. 해당 에러 이벤트에서 초기화면으로 이동한다든가 하는 행위가 필요합니다. |
 
