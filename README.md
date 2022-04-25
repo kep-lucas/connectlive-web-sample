@@ -164,24 +164,32 @@ ConnectLive.createLocalMedia({
 
 promise 패턴외에 await를 사용할 수도 있습니다.
 ```
-const localMedia = await ConnectLive. createLocalMedia (({
+const localMedia = await ConnectLive.createLocalMedia(({
     audio: true,
     video: true
 });
 ```
 
-생성된 로컬 미디어video, audio 속성을 가지고 있고 비디오의 경ㅇattach와 detach API를 통해 엘리먼트를 생성/제거할 수 있습니다.
+생성된 로컬 미디어video, audio 속성을 가지고 있습니다.
+비디오의 경우는 다음 3가지 방법으로 비디오 태그와 연결할 수 있습니다.
 
 ```
+// 방법 1. attach를 이용해 새로운 엘리먼트를 생성한다.
 const video = localMedia.video.attach();
-
 document.querySelector('.local').appendChild(video);
+
+// 방법 2. attach에 비디오 엘리먼트를 전달한다.
+document.querySelector('.local').appendChild(document.elementById('비디오태그아이디'));
+
+// 방법 3. 기존 엘리먼트에 미디어스트림을 직접 연결한다.
+document.getElementById('video-tag-id').srcObject = localMedia.video.getMediaStream();
+```
+위 방법 중 1, 2번은 detach()로 연결을 해제 할 수 있습니다.
+
+```
+localMedia.video.detach();
 ```
 
-기존 video엘리먼트에 비디오를 바인딩 할 수도 있습니다.
-```
-localMedia.video.attach(document.getElementById(“비디오태그아이디”));
-```
 
 ### **Local 장치 목록 가져오기**
 ```
@@ -226,7 +234,7 @@ switchCamera로 접근 중인 비디오 장치를 변경할 수 있습니다. �
 
 ```
 localMedia.switchCamera('디바이스아이디').then(()=>{
-    // localMedia.video.attach()을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
+    // localMedia.video.attach()등을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
 });
 ```
 await를 사용할 수도 있습니다.
@@ -234,7 +242,7 @@ await를 사용할 수도 있습니다.
 ```
 await localMedia.switchCamera('디바이스아이디');
 
-//switchCamera호출 다음에 localMedia.video.attach() 을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
+//switchCamera호출 다음에 localMedia.video.attach()등을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
 ```
 
 
@@ -246,7 +254,7 @@ localMedia.video.setHd(true);
 
 
 ## **화상회의**
-ConnectLive Web SDK를 이용한 화상회의 서비스 구현에 대해 보다 자세히 알아보도록 하겠습니다. 화상회의 서비스를 위해서는 우선 ConnectLive.createConference()를 통해 화상회의 객체를 선언해야합니다.
+ConnectLive Web SDK를 이용한 화상회의 서비스 구현에 대해 보다 자세히 알아보도록 하겠습니다. 화상회의 서비스를 위해서는 우선 ConnectLive.createConference()를 통해 화상회의 객체를 선언해야 합니다.
 
 ```
 const conf = ConnectLive.createConference({
@@ -261,6 +269,8 @@ const conf = ConnectLive.createConference({
 |videoReceiverInitialCount|10|초기 영상 리시버 개수|
 |videoReceiverGrowthRate|10|영상 리시버가 부족한 경우 증가 단위|
 |videoReceiverMaximumCount|50|최대 영상 리시버 개수|
+
+
 여기서 리시버라는 용어가 등장합니다. 리시버란, 비디오를 수신하기 위한 통로입니다. 각각의 비디오를 수신하기 위한 통로이기에 10개의 비디오를 수신하고 싶다면 10개 이상의 리시버가 존재해야 합니다. 
 
 videoReceiverInitialCount는 초기에 몇 개의 리시버를 만들어 둘지 여부를 나타냅니다. 기본값인 10을 그대로 사용하고 참여자가 1명 들어와서 비디오를 구독(subscribe) 했다면, 남은 리시버는 9개가 됩니다. 그리고 후에 참여자가 나가게되면 다시 리시버는 다시 10개가 됩니다. 또 다른 예를 들어보겠습니다. 이번에는 한 명의 참여자가 자신의 얼굴이 나오는 비디오와 화면 공유 비디오까지 두개를 공유했다면, 이를 구독 사람은 리시버 2개 사용하고 남은 리시버는 8개가 됩니다.
@@ -313,13 +323,13 @@ conf.on('remoteVideoPublished', (e)=>{
 ```
 
 ### **미디어 공유 해제하기**
-자신의 비디오 공유를 해제하려면 unpublish API를 사용합니다.  공유과 마찬가지로 로컬 비디오 배열 객체를 받습니다.
+자신의 비디오 공유를 해제하려면 unpublish API를 사용합니다. 공유과 마찬가지로 로컬 비디오 배열 객체를 받습니다.
 
 ```
 await conf.unpublish([ localMedia ]);
 ```
 
-상대방이 자신의 비디오를 공유해제했다면 이는  remoteVideoUnpublished이벤트로 연결됩니다. 해당 이벤트 내에서 상대방의 비디오를 제거합니다.
+상대방이 자신의 비디오를 공유해제했다면 이는 remoteVideoUnpublished이벤트로 연결됩니다. 해당 이벤트 내에서 상대방의 비디오를 제거합니다.
 
 ```
 conf.on('remoteVideoUnpublished', (evt)=>{
@@ -328,7 +338,7 @@ conf.on('remoteVideoUnpublished', (evt)=>{
 ```
 
 ### **미디어 구독 해제하기**
-상대방의 비디오 구독을 해제하려면 unsubscribe API를 사용합니다.  구독과 마찬가지로 비디오 아이디를 받습니다.
+상대방의 비디오 구독을 해제하려면 unsubscribe API를 사용합니다. 구독과 마찬가지로 비디오 아이디를 받습니다.
 
 ```
 await conf.unsubscribe([videoId]);
@@ -346,7 +356,6 @@ conf.on(‘remoteAudioSubscribed’, evt => {
     evt.participant
 });
 ```
-
 
 ```
 conf.on(‘remoteAudioUnsubscribed’, evt => {
@@ -370,7 +379,8 @@ conf.getRemoteAudioLevels();
 ```
 
 ### **수신 중인 비디오의 품질 변경하기**
-리모트 비디오 객체에는 setQuality라는 메소드를 제공하고 있습니다. 해당 메소드는 인자로 “l”, “m”, “h”라는 인자 중 하나를 받습니다. 각각 low, middle, high를 뜻합니다.
+리모트 비디오 객체에는 setQuality라는 메소드를 제공하고 있습니다. 해당 메소드는 인자로 “l”, “m”, “h”라는 인자 중 하나를 받습니다. 각각 low, middle, high를 뜻합니다. 
+high는 하나만 유지됩니다. 만약 A, B 비디오를 순서대로 high 지정했다면 마지막으로 지정한 B만 high로 설정됩니다.
 
 ```
 const remoteVideo = remoteParticipant.getVideo(‘비디오 아이디’)
@@ -383,27 +393,39 @@ remoteVideo.setQuality(‘h’);
 
 |**이름**|**인자**|**설명**|
 | :-: | :-: | :-: |
-|connecting|<p>{</p><p>`     `progress: 0 ~ 100</p><p>}</p>|연결과정에서 각 과정이 지날때마다 호출됩니다. 연결 과정은 0 ~ 100%까지로 표현됩니다.|
-|connected|{ participants: [] }|룸에 성공적으로 접속하면 호출 되는 이벤트 입니다. 인자로 기존 접속하고 있는 participants 목록이 인자로 전달됩니다.|
-|participantEntered|{ participant: {} }|새로운 참여자가 들어오면 호출 되는 이벤트 입니다. 참여자 객체를 인자로 전달됩니다.|
-|participantLeft|{ participantId: '' }|참여자가 룸에서 떠나면 호출되는 이벤트입니다. 나간 참여자 아이디가 인자로 전달됩니다.|
-|remoteVideoPublished|<p>{</p><p>participant: {},</p><p>remoteVideo: {}</p><p>}</p>|상대 참여자가 자신의 비디오를 공유하면 호출됩니다. 인자로 참여자 객체와 비디오 객체가 전달됩니다. 비디오객체 안의 비디오 아이디를 이용해 해당 비디오를 구독하고 비디오 태그에 비디오를 바인딩 할 수 있습니다.|
-|remoteVideoUnpublished|<p>{</p><p>participant: {},</p><p>remoteVideo: {}</p><p>}</p>|<p>상대 참여자가 자신의 미디어 공유를 해제하면 호출됩니다. 인자로 참여자 객체와 비디오 객체가 전달됩니다. </p><p>비디오 객체를 이용해 비디오 태그에 비디오를 해제할 수 있습니다.</p>|
-|remoteAudioSubscribe|{ participant: {} }|4개의 오디오 중 하나를 참여자가 점유하면 호출 되는 이벤트 이다.|
-|remoteAudioUnsubscribe|{ participant: {} }|점유하고 있던 오디오가 해제되면 호출되는 이벤트 이다. 해당 사용자가 말을 하지 않고 있다는 것을 의미한다.|
-|disconnected||컨퍼런스 룸에서 정상적으로 나오면 호출되는 이벤트.|
-|error|에러 메시지|미디어서버와의 연결이 실패했을 경우, 호출됩니다.|
+| connecting | progress: number | 연결과정에서 각 과정이 지날때마다 호출됩니다. 연결 과정은 0 ~ 100%까지로 표현됩니다. |
+| connected |{ participants: [] } | 룸에 성공적으로 접속하면 호출 되는 이벤트 입니다. 인자로 기존 접속하고 있는 participants 목록이 인자로 전달됩니다. |
+| participantEntered |{ participant: {} } | 새로운 참여자가 들어오면 호출 되는 이벤트 입니다. 참여자 객체를 인자로 전달됩니다. |
+| participantLeft |{ participantId: '' } | 참여자가 룸에서 떠나면 호출되는 이벤트입니다. 나간 참여자 아이디가 인자로 전달됩니다. |
+| localMediaPublished | localMedia: LocalMedia | 자신의 로컬 미디어를 공유하면 호출되는 이벤트입니다. |
+| localMediaUnpublished | localMedia: LocalMedia | 자신의 로컬 미디어를 공유 해제하면 호출되는 이벤트입니다. |
+| remoteVideoPublished | remoteParticipant: RemoteParticipant, remoteVideo: RemoteVideo | 상대 참여자가 비디오를 공유하면 호출됩니다. 인자로 참여자 객체와 비디오 객체가 전달됩니다. 비디오객체 안의 비디오 아이디를 이용해 해당 비디오를 구독하고 비디오 태그에 비디오를 바인딩 할 수 있습니다.|
+| remoteVideoUnpublished | remoteParticipant: RemoteParticipant, remoteVideo: RemoteVideo | 상대 참여자가 비디오 공유를 해제하면 호출됩니다. 인자로 참여자 객체와 비디오 객체가 전달됩니다. 비디오 객체를 이용해 비디오 태그에 비디오를 해제할 수 있습니다. |
+| remoteAudioPublished | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 상대 참여자가 오디오를 공유하면 호출됩니다. 인자로 참여자 객체와 오디오 객체가 전달됩니다. |
+| remoteAudioUnpublished | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 상대 참여자가 오디오 공유를 해제하면 호출됩니다. 인자로 참여자 객체와 오디오 객체가 전달됩니다. |
+
+| remoteAudioSubscribe | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 4개의 오디오 중 하나를 참여자가 점유하면 호출 되는 이벤트입니다. |
+| remoteAudioUnsubscribe | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 점유하고 있던 오디오가 해제되면 호출되는 이벤트 이다. 해당 사용자가 말을 하지 않고 있다는 것을 의미한다. |
+
+| remoteAudioStateChanged | remoteParticipant: RemoteParticipant, remoteAudio: RemoteAudio | 다른 참여자의 오디오의 상태 alwaysOn 또는 enabled가 변경되면 호출됩니다. alwaysOn이란, 오디오를 계속적으로 점유해서 나의 오디오가 항시 전달되도록 하는 기능입니다. LocalAudiod의 setAlwaysOn 메소드로 이를 설정할 수 있습니다.
+
+enabled을 false로 설정할 경우, 오디오를 잠시 mute 결과를 얻을 수 있습니다. LocalAudio의 setEnabled 메소드로 이를 설정할 수 있습니다. |
+
+| remoteVideoStateChanged | remoteParticipant: RemoteParticipant, remoteVideo: RemoteVideo | 다른 참여자의 비디오 상태 곧 enabled 상태가 변경되면 호출됩니다. enabled을 false로 설정할 경우, 비디오를 잠시 mute 결과를 얻을 수 있습니다. LocalVideo의 setEnabled 메소드로 이를 설정할 수 있습니다. |
+
+| disconnected |  | 컨퍼런스 룸에서 정상적으로 나오면 호출되는 이벤트. |
+| error | 에러 메시지 | 미디어서버와의 연결이 실패했을 경우, 호출됩니다. 해당 에러 이벤트에서 초기화면으로 이동한다든가 하는 행위가 필요합니다. |
 
 ## **화면 공유하기**
 ConnectLive는 프리젠테이션을 위한 화면 공유를 지원합니다. 화면 공유용 미디어 객체를 얻기 위해서는 createLocalScreen API를 이용 합니다.
 
 ```
 const localScreen = await ConnectLive.createLocalScreen({
+    audio: true,
     video: true
 });
 ```
-
-
+화면 공유용 객체 선언시 audio옵션을 줄 수 있습니다. 이 경우, 예를 들어 공유한 크롭 탭에서 현재 오디오가 재생되고 있다면 해당 오디오까지 공유되어집니다.
 화면 공유용 비디오 객체를 생성했다면, 해당 객체가 화면 공유를 위한 비디오임을 표시해야 합니다. ConnectLive 트랙 객체는 setExtraValue라는 API를 제공합니다. 이는 해당 트랙에 원하는 형태의 문자열 값을 추가할 수 있고 이 값을 참여자들과 공유할 수 있습니다. 여기에 화면 공유용 트랙임을 명시합니다. 여기서는 screen이라는 문자열 값을 명시했지만 원하는 어떠한 값이든 상관없습니다.
 
 ```
@@ -439,7 +461,7 @@ conf.on('remoteVideoPublished', (evt)=>{
 ```
 
 
-화면 공유 비디오는 서비스마다 다르게 보일 수 있습니다. 예를 들어, 화면 공유 비디오를 가운데 크게 보이길 원한다거나 혹은 모든 참여자가 공유한 화면 공유 비디오를 바둑판식으로 배열할 수도 있습니다. 그러려면  다른 일반 비디오와 구분해야할 필요가 있습니다. 위 코드에서 participant.getUnsubscribeVideos()와 e. remoteVideo 에 주목해 보면 이들이 리모트 비디오 객체를 반환한다는 것을 알 수 있습니다. 리모트 비디오 객체는 videoId 외에 extraValue라는 값을 전달할 수 있습니다. 이 값을 이용해 상대방이 공유한 화면 공유 비디오를 구분 할 수 있습니다.
+화면 공유 비디오는 서비스마다 다르게 보일 수 있습니다. 예를 들어, 화면 공유 비디오를 가운데 크게 보이길 원한다거나 혹은 모든 참여자가 공유한 화면 공유 비디오를 바둑판식으로 배열할 수도 있습니다. 그러려면 다른 일반 비디오와 구분해야할 필요가 있습니다. 위 코드에서 participant.getUnsubscribeVideos()와 e.remoteVideo 에 주목해 보면 이들이 리모트 비디오 객체를 반환한다는 것을 알 수 있습니다. 리모트 비디오 객체는 videoId 외에 extraValue라는 값을 전달합니다. 이 값을 이용해 상대방이 공유한 화면 공유 비디오를 구분 할 수 있습니다.
 
 ```
 conf.on('connected', (evt)=>{
@@ -484,12 +506,30 @@ await this.conf.publish([this.localMedia], true);
 
 
 ## **에러 처리**
+Connectlive 에러 객체는 두가지 타입으로 나눠집니다. ServerError, ClientError 타입입니다. 이름에서도 알 수 있듯이, 각각 서버 에러와 클라이언트 에러에 대한 정보를 담고 있습니다.
+에러 객체는 code와 메시지 속성을 지니고 있으며 해당 에러를 통해 어떤 에러인지 구분할 수 있습니다.
+
+** 서버 에러
+|**name**|**message**|**Description**|
+| :- | :- | :- |
+| -11001 | Scheme mismatch | 해당 service id에 설정된 값과 입력된 auth. scheme이 다름 |
+| -11002 | Unauthorized | 허가되지 않은 요청에 대한 응답 |
+| -11003 | Invalid service id or key | 등록되지 않은 service id 또는 service key |
+| -11004 | Forbidden | 인증 확인 실패 |
+| -11005 | Invalid token | 현 토큰 확인 실패 |
+
+
+** 클라이언트 에러
+|**name**|**message**|**Description**|
+| :- | :- | :- |
+| 0 | 메시지 | 클라이언트 에러 메시지 |
+
+
 ### **서비스 인증 에러처리**
 인증 과정에서의 에러는 아래와 같이 처리할 수 있습니다.
 
 ```
 //promise
-
 ConnectLive.signIn({
     serviceId: '서비스아이디',
     serviceKey: '서비스키',
@@ -501,42 +541,29 @@ ConnectLive.signIn({
 
 ```
 //await
-
 try{
     await ConnectLive.signIn({
         serviceId: '서비스아이디',
         serviceKey: '서비스키',
         secret: '시크릿키',
-});
+    });
 } catch (err) {
     //에러 처리
 }
 ```
-
-err객체는 일반적인 에러 객체이며 name과 message 속성을 가지고 있습니다. name에러를 구분할 수 있는 코드이며 message는 에러를 설명하는 문자열입니다.
-
-|**name**|**message**|**Description**|
-| :- | :- | :- |
-|-11001|Scheme mismatch|해당 service id에 설정된 값과 입력된 auth. scheme이 다름|
-|-11002|Unauthorized|허가되지 않은 요청에 대한 응답|
-|-11003|Invalid service id or key|등록되지 않은 service id 또는 service key|
-|-11004|Forbidden|인증 확인 실패|
-|-11005|Invalid token|현 토큰 확인 실패|
 
 ### **connect시 에러 처리**
 룸에 접속하기 위해 호출하는 connect API는 룸에 정상적으로 접속하지 못 하면 에러를 반환합니다.
 
 ```
 //promise
-
-conf.connect('룸 아이디').catch(()=>{
+conf.connect('룸 아이디').catch((err)=>{
     //에러 처리
 });
 ```
 
 ```
 //await 사용시
-
 try{
     await conf.connect('룸 아이디');
 } catch () {
@@ -549,8 +576,7 @@ try{
 
 ```
 //promise
-
-conf.publish( [ localMedia ] ).catch(()=>{
+conf.publish( [ localMedia ] ).catch((err)=>{
     //에러 처리
 });
 ```
@@ -559,7 +585,7 @@ conf.publish( [ localMedia ] ).catch(()=>{
 //await 사용시
 try{
     await conf.publish( [localMedia] );
-} catch () {
+} catch (err) {
     //에러 처리
 }
 ```
@@ -569,7 +595,7 @@ try{
 
 ```
 //promise
-conf.subscribe(비디오아이디배열).catch(()=>{
+conf.subscribe(비디오아이디배열).catch((err)=>{
     //에러 처리
 });
 ```
@@ -578,17 +604,18 @@ conf.subscribe(비디오아이디배열).catch(()=>{
 //await 사용시
 try{
     await this.conf.subscribe(비디오아이디배열);
-} catch () {
+} catch (err) {
     //에러 처리
 }
 ```
 
 ### **P2P 연결 실패 에러**
-ConnectLive는 미디어 서버와 클라이언트가 p2p로 연결되어 오디오와 비디오를 송수신 합니다. 이때 p2p로 연결된 미디어 서버와의 네트워크 상황 등에 의해 연결을 실패할 수 있습니다. 이러한 상황에 대응할 수 있도록 화상 회의 객체에 error 콜백을 등록할 수 있습니다.
+ConnectLive는 미디어 서버와 클라이언트가 p2p로 연결되어 오디오와 비디오를 송수신 합니다. 이때 p2p로 연결된 미디어 서버와의 네트워크 상황 등에 의해 연결을 실패할 수 있습니다. 이러한 상황에 대응할 수 있도록 화상 회의 객체에 error 콜백을 등록할 수 있습니다. 해당 이벤트 안에서 disconnect를 호출하고 초기 화면으로 이동한다 등의 에러 처리가 필요합니다.
 
 ```
 conf.on('error', ()=>{
     //에러 처리
+    conf.disconnect();
 });
 ```
 
@@ -630,4 +657,4 @@ await ConnectLive.signIn({
 5. 선택된 카메라로 변경할 수 있습니다.
 6. 자신의 로컬 비디오가 표시됩니다.
 7. 상대방의 리모트 비디오들이 표시됩니다. 좌측 상단의 노란색 표시는 현재 오디오를 점유하고 있는 참여자들에 대한 표시입니다.
-8. 좌측 비디오를 클릭하면 품질을 향상시키면서 가운데 표시합니다.
+8. 좌측 비디오를 클릭하면 품질을 향상시키면서 가운데 표시합니다. high 비디오는 하나만 유지되어 다른 비디오를 선택하면 이번 비디오는 이전 상태로 돌아가고 선택된 현재 비디오가 high로 설정됩니다.
