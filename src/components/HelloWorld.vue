@@ -112,9 +112,9 @@ export default {
     },
     async onProvisioning() {
       await ConnectLive.signIn({
-        serviceId: '202200000000',
-        serviceKey: '2022000000000000',
-        secret: '2022000000000000',
+        serviceId: '서비스아디이를입력하세요',
+        serviceKey: '서비스키를입력하세요',
+        secret: '시크릿키를입력하세요',
       });
     },
     async onCreateLocalMedia() {
