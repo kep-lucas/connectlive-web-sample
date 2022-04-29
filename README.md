@@ -245,6 +245,35 @@ await localMedia.switchCamera('디바이스아이디');
 //switchCamera호출 다음에 localMedia.video.attach()등을 통해 새로 비디오 엘리먼트를 연결해 비디오를 재생할 수 있습니다.
 ```
 
+### **마이크 장치 변경하기**
+switchMic로 접근 중인 마이크 장치를 변경할 수 있습니다. 예를 들어 전면 노트북 마이크를 사용하다 이어폰 마이크를 변경할 수 있습니다. 만약 switchMic시 이미 화상회의를 진행중이라면, 기존 오디오를 제거하고 새로운 마이크의 오디오로 연결을 이어갑니다.
+
+```
+localMedia.switchMic('디바이스아이디').then(()=>{
+    // 마이크 전환 성공
+});
+```
+await를 사용할 수도 있습니다.
+
+```
+await localMedia.switchMic('디바이스아이디');
+```
+
+### **스피커 장치 변경하기**
+switchSpeaker 상대방의 오디오를 재생 중인 스피커를 변경할 수 있습니다. 예를 들어 전면 노트북 스피커에서 이어폰으로 변경할 수 있습니다. switchSpeaker 메서드는 localMedia가 아닌 conference 객체에서 제공함을 유의해주세요.
+
+```
+conf.switchSpeaker('디바이스아이디').then(()=>{
+    // 스피커 전환 성공
+});
+```
+await를 사용할 수도 있습니다.
+
+```
+await conf.switchSpeaker('디바이스아이디');
+```
+
+
 
 ### ** HD 모드 적용하기
 publish 전에 video의 품질을 좋게 하기 위해 HD 모드를 적용할 수 있습니다.

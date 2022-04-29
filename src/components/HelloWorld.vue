@@ -16,6 +16,20 @@
         <button @click="onChangeCamera">카메라변경</button>
       </div>
 
+      <div style="display:inline-block;" v-if="isConnected">
+        <select id="micSource">
+          <option v-for="(item, index) in micDevices" :key="index" :value="item.deviceId">{{item.label}}</option>
+        </select>
+        <button @click="onMicChange">마이크변경</button>
+      </div>
+
+      <div style="display:inline-block;" v-if="isConnected">
+        <select id="speakerSource">
+          <option v-for="(item, index) in speakerDevices" :key="index" :value="item.deviceId">{{item.label}}</option>
+        </select>
+        <button @click="onSpeakerChange">스피커변경</button>
+      </div>
+
     </header>
     <div class="flex row">
       <div class="media-list">
@@ -65,6 +79,8 @@ export default {
       isConnected: false,
       myId: '',
       cameraDevices: [],
+      micDevices: [],
+      speakerDevices: [],
       audioCheckInterval: -1,
       isRecording: false
     };
@@ -96,9 +112,9 @@ export default {
     },
     async onProvisioning() {
       await ConnectLive.signIn({
-        serviceId: '서비스아이디를 입력합니다',
-        serviceKey: '서비스키를 입력합니다',
-        secret: '시크릿키를 입력합니다'
+        serviceId: '202200000000',
+        serviceKey: '2022000000000000',
+        secret: '2022000000000000',
       });
     },
     async onCreateLocalMedia() {
@@ -114,6 +130,10 @@ export default {
         document.querySelector('.local-container').appendChild(video);
 
         this.cameraDevices = await this.localMedia.getCameraDevices();
+
+        this.micDevices = await this.localMedia.getMicDevices();
+
+        this.speakerDevices = await this.localMedia.getSpeakerDevices();
       });
     },
     async onCreateLocalScreen() {
@@ -223,6 +243,14 @@ export default {
       video.style.width = '100%';
       document.querySelector('.local-container').appendChild(video);
     },
+    async onMicChange() {
+      const micSource = document.getElementById('micSource');
+      await this.localMedia.switchMic(micSource.value);
+    },
+    async onSpeakerChange() {
+      const speakerSource = document.getElementById('speakerSource');
+      await this.conf.switchSpeaker(speakerSource.value);
+    },
     onClickSpotlight(event) {
       const target = event.target;
       const remoteParticipant = this.conf.remoteParticipants.find(participant => participant.id === target.dataset.participantid);
@@ -303,7 +331,7 @@ video {
 }
 
 header {
-  height: 55px;
+  min-height: 55px;
   padding: 3px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
